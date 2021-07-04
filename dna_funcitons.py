@@ -78,8 +78,14 @@ class DNACHandler:
 
         return client_health
 
-if __name__ == "__main__":
+    def get_network_devices(self):
+        """ Gets a list of devices in the network """
 
+        network_devices = self._req("network-device")
+
+        return network_devices
+
+if __name__ == "__main__":
 
     dnac_credentials = load_credentials("devnet_always_on")
 
@@ -89,4 +95,7 @@ if __name__ == "__main__":
 
     dnac_instance = DNACHandler(dnac_host, dnac_user, dnac_password)
 
-    print(dnac_instance.get_client_health().status_code)
+    devices =dnac_instance.get_network_devices().json()
+
+    for device in devices["response"]:
+        print(device["macAddress"])
