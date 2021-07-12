@@ -85,6 +85,30 @@ class DNACHandler:
 
         return network_devices
 
+    def parsed_client_health(self):
+        """ Parses an easier list of client health """
+
+        clients = self.get_client_health().json()
+
+        result = {}
+
+        for category in clients["response"][0]["scoreDetail"]:
+            result.update({category["scoreCategory"]["value"]:{}})
+
+            #print(json.dumps(category, indent=2))
+                
+            if "scoreList" in category:
+                scores = {}
+
+                for score_category in category["scoreList"]:
+                    scores.update({score_category["scoreCategory"]["value"]:score_category["clientCount"]})
+
+                result.update({category["scoreCategory"]["value"]:scores})
+            else:
+                continue
+
+        return result
+
 if __name__ == "__main__":
 
     dnac_credentials = load_credentials("devnet_always_on")
@@ -95,7 +119,11 @@ if __name__ == "__main__":
 
     dnac_instance = DNACHandler(dnac_host, dnac_user, dnac_password)
 
-    devices =dnac_instance.get_network_devices().json()
+    devices = dnac_instance.get_network_devices().json()
 
-    for device in devices["response"]:
-        print(device["macAddress"])
+    print(json.dumps(devices, indent=2))
+
+    # for device in devices["response"]:
+    #     print(device["macAddress"])
+
+    #print(json.dumps(dnac_instance.parsed_client_health(), indent=2))
